@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Confirmation · @deepwithharsh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Hind:wght@400;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="legal.css">
+<style>
+.confirmation-card {
+  text-align: center;
+  padding: 40px 24px;
+}
+.icon {
+  font-size: 54px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.notice-box {
+  background: #fff8e1;
+  border: 1.5px solid #ebd08f;
+  border-radius: 4px;
+  padding: 16px 18px;
+  font-size: 15px;
+  margin: 20px 0;
+  text-align: left;
+  line-height: 1.6;
+}
+.notice-box b {
+  color: #181410;
+}
+.order-id {
+  font-family: "Space Mono", monospace;
+  background: #181410;
+  color: #f2b31a;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+#locked-content {
+  display: none;
+}
+#error-content {
+  display: none;
+}
+</style>
+</head>
+<body>
+<main class="doc confirmation-card">
+
+  <!-- Displayed when payment is verified -->
+  <div id="verified-content">
+    <div class="icon">🎉</div>
+    <div class="tag">@deepwithharsh</div>
+    <h1>Payment Successful!</h1>
+    <p>Thank you for getting <b>The Viral Reels Blueprint</b>.</p>
+    
+    <div class="notice-box">
+      <b>📧 Your PDF has been sent to your email inbox!</b><br>
+      Because this is a protected digital product, your personal copy with copy-paste prompts has been dispatched directly to the email address you entered during checkout.<br><br>
+      • <b>Sender:</b> Deep With Harsh<br>
+      • <b>Subject:</b> 🎉 Your Copy: The Viral Reels Blueprint (PDF) · @deepwithharsh<br>
+      • <b>Payment ID:</b> <span class="order-id" id="pid">VERIFIED</span>
+    </div>
+
+    <p style="font-size: 14.5px; color: var(--muted); margin-top: 14px;">
+      <i>Please allow 1–3 minutes for delivery. Don't forget to check your <b>Spam / Promotions</b> folder just in case!</i>
+    </p>
+
+    <p style="margin-top: 24px; font-size: 15px;">
+      Need help or didn't receive your email? DM me directly with your Payment ID:<br>
+      <a href="https://www.instagram.com/deepwithharsh/" target="_blank" rel="noopener" style="font-weight:700; color:var(--ter);">@deepwithharsh</a>
+    </p>
+  </div>
+
+  <!-- Displayed if someone tries to open thank-you.html directly without paying -->
+  <div id="locked-content">
+    <div class="icon">🔒</div>
+    <div class="tag">Access Restricted</div>
+    <h1>No Payment Detected</h1>
+    <p>This page is strictly reserved for confirmed orders.</p>
+    <div class="notice-box" style="background:#fdf2ef; border-color:#f0c3b8;">
+      If you would like to purchase <b>The Viral Reels Blueprint</b> for <b>₹99</b>, please complete the checkout on the homepage.
+    </div>
+    <a href="index.html" style="display:inline-block; margin-top:16px; background:#181410; color:#fff; padding:12px 22px; text-decoration:none; font-weight:700;">
+      ← Go to Homepage (₹99)
+    </a>
+  </div>
+
+  <div class="legal-nav" style="justify-content:center; margin-top:30px;">
+    <a href="index.html">← Back to Homepage</a>
+  </div>
+</main>
+
+<script>
+(function() {
+  // Check if URL contains Razorpay payment confirmation parameters
+  const params = new URLSearchParams(window.location.search);
+  const paymentId = params.get("razorpay_payment_id") || params.get("payment_id");
+  const paymentStatus = params.get("razorpay_payment_link_status") || params.get("status");
+
+  // If someone accessed thank-you.html directly without paying, lock it
+  if (!paymentId && paymentStatus !== "paid") {
+    // Check if test mode or direct access
+    const isTest = params.get("test") === "true";
+    if (!isTest) {
+      document.getElementById("verified-content").style.display = "none";
+      document.getElementById("locked-content").style.display = "block";
+      return;
+    }
+  }
+
+  if (paymentId) {
+    document.getElementById("pid").textContent = paymentId;
+  }
+})();
+</script>
+</body>
+</html>
