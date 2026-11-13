@@ -188,6 +188,109 @@ a{color:inherit}
   letter-spacing:.1em;
 }
 
+/* Hero Indication Arrow & Card */
+.hero-indication{
+  display:block;
+  text-decoration:none;
+  background:#fff8e1;
+  border:2px dashed var(--ink);
+  padding:12px 16px;
+  margin:16px 0 20px;
+  color:var(--ink);
+  transition:transform .15s, background .15s, box-shadow .15s;
+  box-shadow:4px 4px 0 var(--ink);
+}
+.hero-indication:hover{
+  transform:translate(-2px, -2px);
+  background:#fff3c4;
+  box-shadow:6px 6px 0 var(--ink);
+}
+.hero-indication .badge-content{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.hero-indication .arrow-icon{
+  font-size:30px;
+  line-height:1;
+  animation:bounceDown 1.4s infinite ease-in-out;
+  display:inline-block;
+  flex-shrink:0;
+}
+@keyframes bounceDown{
+  0%, 100%{ transform:translateY(0); }
+  50%{ transform:translateY(7px); }
+}
+.hero-indication .hint-text{
+  font-size:15px;
+  line-height:1.4;
+}
+.hero-indication .hint-text b{
+  color:var(--ter);
+  font-size:17px;
+  display:block;
+  margin-bottom:2px;
+}
+
+/* Form Pulse Highlight Effect */
+@keyframes formPulse{
+  0%{ box-shadow:0 0 0 0 rgba(200,85,61,.8); }
+  50%{ box-shadow:0 0 0 16px rgba(200,85,61,0); }
+  100%{ box-shadow:5px 5px 0 var(--ink); }
+}
+.pulse-form{
+  animation:formPulse 1.2s ease-out 2;
+  border-color:var(--ter) !important;
+}
+
+/* Floating Sticky Buy Bar */
+.floating-bar{
+  position:fixed;
+  bottom:18px;
+  right:18px;
+  z-index:999;
+  background:var(--ink);
+  color:#fff;
+  border:2px solid var(--mus);
+  box-shadow:0 8px 24px rgba(0,0,0,.35), 4px 4px 0 var(--mus);
+  padding:12px 20px;
+  border-radius:40px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800;
+  font-size:16px;
+  transform:translateY(140px);
+  transition:transform .3s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.floating-bar.show{
+  transform:translateY(0);
+}
+.floating-bar .f-tag{
+  background:var(--ter);
+  color:#fff;
+  font-size:13px;
+  padding:4px 9px;
+  border-radius:20px;
+  letter-spacing:.02em;
+}
+.floating-bar:hover{
+  background:#261f18;
+  transform:translateY(-2px);
+}
+@media (max-width:560px){
+  .floating-bar{
+    left:14px;
+    right:14px;
+    bottom:14px;
+    justify-content:center;
+    padding:11px 16px;
+    font-size:15px;
+  }
+}
+
 /* Collage of Polaroid Reels */
 .collage{
   position:relative;
@@ -675,6 +778,17 @@ footer a:hover{color:var(--ter)}
         <span class="lbl">🔥 ₹99 Launch Offer ends in</span>
         <div class="cells tmr" data-t="cells"></div>
       </div>
+
+      <!-- Direct Indication Arrow & Card to Form -->
+      <a class="hero-indication" href="#buy" title="Jump directly to checkout form">
+        <div class="badge-content">
+          <span class="arrow-icon">👇</span>
+          <div class="hint-text hand">
+            <b>Fill 3-field form below to purchase</b>
+            Takes 30 seconds &bull; Instant PDF guide delivered to your email ⚡
+          </div>
+        </div>
+      </a>
     </div>
 
     <!-- 9 Polaroid Reels Collage -->
@@ -1010,8 +1124,51 @@ footer a:hover{color:var(--ter)}
       $("pay").textContent = "Pay ₹99 & Download Guide";
     }
   });
+
+  // Smooth scroll, pulse highlight, and auto-focus on form
+  document.querySelectorAll('a[href="#buy"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById('buy');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        const form = document.getElementById('form');
+        if (form) {
+          form.classList.remove('pulse-form');
+          void form.offsetWidth; // trigger reflow
+          form.classList.add('pulse-form');
+          setTimeout(() => {
+            const nameInput = document.getElementById('name');
+            if (nameInput) nameInput.focus();
+          }, 600);
+        }
+      }
+    });
+  });
+
+  // Floating sticky buy bar visibility on scroll
+  const floatingBar = document.getElementById('floating-bar');
+  const buySection = document.getElementById('buy');
+  if (floatingBar && buySection) {
+    window.addEventListener('scroll', () => {
+      const rect = buySection.getBoundingClientRect();
+      // Show floating bar after scrolling 350px, hide when form is visible
+      if (window.scrollY > 350 && rect.top > window.innerHeight - 80) {
+        floatingBar.classList.add('show');
+      } else {
+        floatingBar.classList.remove('show');
+      }
+    }, { passive: true });
+  }
 })();
 </script>
+
+<!-- Floating Quick Buy Sticky Bar on scroll -->
+<a href="#buy" class="floating-bar" id="floating-bar" title="Scroll down to checkout form">
+  <span class="f-tag">🔥 ₹99</span>
+  <span>Fill Form to Get Guide</span>
+  <span style="font-size:18px; line-height:1;">↓</span>
+</a>
 
 </body>
 </html>
