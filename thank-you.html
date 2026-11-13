@@ -17,6 +17,26 @@
   line-height: 1;
   margin-bottom: 12px;
 }
+.dl-btn {
+  display: inline-block;
+  background: var(--ter);
+  color: #fff;
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 16px 28px;
+  text-decoration: none;
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  margin: 22px 0 16px;
+  transition: transform .12s, box-shadow .12s;
+  cursor: pointer;
+}
+.dl-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+  background: #b34029;
+}
 .notice-box {
   background: #fff8e1;
   border: 1.5px solid #ebd08f;
@@ -41,9 +61,6 @@
 #locked-content {
   display: none;
 }
-#error-content {
-  display: none;
-}
 </style>
 </head>
 <body>
@@ -56,20 +73,24 @@
     <h1>Payment Successful!</h1>
     <p>Thank you for getting <b>The Viral Reels Blueprint</b>.</p>
     
+    <a class="dl-btn" id="dl-link" href="https://drive.google.com/file/d/1ae7XQESpQideKBZCxDZBuYGPoty6CLJK/view" target="_blank" rel="noopener">
+      📥 Download Your PDF Guide Now
+    </a>
+
     <div class="notice-box">
-      <b>📧 Your PDF has been sent to your email inbox!</b><br>
-      Because this is a protected digital product, your personal copy with copy-paste prompts has been dispatched directly to the email address you entered during checkout.<br><br>
+      <b>📧 A Backup Copy is Sent to Your Email!</b><br>
+      We have also dispatched a permanent copy of your guide directly to your email address: <b id="user-email">your email</b>.<br><br>
       • <b>Sender:</b> Deep With Harsh<br>
       • <b>Subject:</b> 🎉 Your Copy: The Viral Reels Blueprint (PDF) · @deepwithharsh<br>
       • <b>Payment ID:</b> <span class="order-id" id="pid">VERIFIED</span>
     </div>
 
     <p style="font-size: 14.5px; color: var(--muted); margin-top: 14px;">
-      <i>Please allow 1–3 minutes for delivery. Don't forget to check your <b>Spam / Promotions</b> folder just in case!</i>
+      <i>Please allow 1–3 minutes for email delivery. Don't forget to check your <b>Spam / Promotions</b> folder!</i>
     </p>
 
     <p style="margin-top: 24px; font-size: 15px;">
-      Need help or didn't receive your email? DM me directly with your Payment ID:<br>
+      Need help? DM me directly with your Payment ID:<br>
       <a href="https://www.instagram.com/deepwithharsh/" target="_blank" rel="noopener" style="font-weight:700; color:var(--ter);">@deepwithharsh</a>
     </p>
   </div>
@@ -93,26 +114,54 @@
   </div>
 </main>
 
+<script src="config.js"></script>
 <script>
 (function() {
-  // Check if URL contains Razorpay payment confirmation parameters
+  const S = window.SHOP || {};
   const params = new URLSearchParams(window.location.search);
   const paymentId = params.get("razorpay_payment_id") || params.get("payment_id");
   const paymentStatus = params.get("razorpay_payment_link_status") || params.get("status");
+  const isTest = params.get("test") === "true";
 
-  // If someone accessed thank-you.html directly without paying, lock it
-  if (!paymentId && paymentStatus !== "paid") {
-    // Check if test mode or direct access
-    const isTest = params.get("test") === "true";
-    if (!isTest) {
-      document.getElementById("verified-content").style.display = "none";
-      document.getElementById("locked-content").style.display = "block";
-      return;
-    }
+  // If directly opened without payment parameters or test flag, lock it
+  if (!paymentId && paymentStatus !== "paid" && !isTest) {
+    document.getElementById("verified-content").style.display = "none";
+    document.getElementById("locked-content").style.display = "block";
+    return;
   }
 
   if (paymentId) {
     document.getElementById("pid").textContent = paymentId;
+  }
+
+  // Retrieve customer info
+  let email = "";
+  let name = "Creator";
+  try {
+    email = sessionStorage.getItem("dwh_email") || "";
+    name = sessionStorage.getItem("dwh_name") || "Creator";
+  } catch(e) {}
+
+  if (email) {
+    document.getElementById("user-email").textContent = email;
+  }
+
+  // Trigger instant fulfillment via Google Apps Script (updates Sheet & sends PDF email)
+  if (S.api && (paymentStatus === "paid" || paymentId || isTest)) {
+    try {
+      fetch(S.api, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({
+          action: "paymentSuccess",
+          email: email,
+          name: name,
+          payment_id: paymentId || "VERIFIED"
+        })
+      });
+    } catch(err) {
+      console.log("Fulfillment error:", err);
+    }
   }
 })();
 </script>
