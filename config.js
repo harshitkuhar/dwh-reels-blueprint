@@ -1,7 +1,7 @@
 // Configuration for @deepwithharsh landing page
 window.SHOP = {
-  // Replace this URL after deploying your Google Apps Script
-  api: "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE",
+  // Live Google Apps Script Backend URL
+  api: "https://script.google.com/macros/s/AKfycbwQO0zmVODEakXmjahGHUA-FHgYfp9VKnJPQF4wHmvvFQ3LixpA1xmg19UvMtmlVIbN/exec",
   
   // Product pricing
   price: 99,
