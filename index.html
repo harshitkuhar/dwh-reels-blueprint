@@ -967,6 +967,13 @@ footer a:hover{color:var(--ter)}
     $("pay").disabled = true;
     $("pay").textContent = "Opening secure payment…";
 
+    // Save customer details in session for instant fulfillment on thank-you page
+    try {
+      sessionStorage.setItem("dwh_name", name);
+      sessionStorage.setItem("dwh_email", email);
+      sessionStorage.setItem("dwh_phone", phone);
+    } catch(e) {}
+
     try {
       if (!S.api || S.api === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
         // DEMO / TEST MODE
