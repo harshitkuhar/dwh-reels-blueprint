@@ -120,6 +120,7 @@
   const S = window.SHOP || {};
   const params = new URLSearchParams(window.location.search);
   const paymentId = params.get("razorpay_payment_id") || params.get("payment_id");
+  const paymentLinkId = params.get("razorpay_payment_link_id") || params.get("payment_link_id");
   const paymentStatus = params.get("razorpay_payment_link_status") || params.get("status");
   const isTest = params.get("test") === "true";
 
@@ -138,8 +139,8 @@
   let email = "";
   let name = "Creator";
   try {
-    email = sessionStorage.getItem("dwh_email") || "";
-    name = sessionStorage.getItem("dwh_name") || "Creator";
+    email = sessionStorage.getItem("dwh_email") || localStorage.getItem("dwh_email") || "";
+    name = sessionStorage.getItem("dwh_name") || localStorage.getItem("dwh_name") || "Creator";
   } catch(e) {}
 
   if (email) {
@@ -156,7 +157,8 @@
           action: "paymentSuccess",
           email: email,
           name: name,
-          payment_id: paymentId || "VERIFIED"
+          payment_id: paymentId || "VERIFIED",
+          payment_link_id: paymentLinkId || ""
         })
       });
     } catch(err) {
